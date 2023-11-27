@@ -11,10 +11,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  private TalonSRX talon = new TalonSRX(0);
+  private TalonSRX talon;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+
+    talon = new TalonSRX(0);
+
     talon.configFactoryDefault(); 
   }
 
