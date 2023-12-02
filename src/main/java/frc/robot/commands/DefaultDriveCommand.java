@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -13,7 +14,10 @@ public class DefaultDriveCommand extends CommandBase {
   private DriveSubsystem DRIVE_SUBSYSTEM;   
   private Joystick joystick; 
 
-  double motorSpeed = 0; 
+  double motorDrive = 0; 
+  double motorTurn = 0; 
+
+  SlewRateLimiter drive_Limiter = new SlewRateLimiter(1); 
 
   /** Creates a new DefaultDriveCommand. */
   public DefaultDriveCommand(DriveSubsystem drive, Joystick joy) {
@@ -28,14 +32,37 @@ public class DefaultDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {  
-      motorSpeed = 0; 
+      motorDrive = 0; 
+      motorTurn = 0; 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    motorSpeed = joystick.getRawAxis(1);
-    DRIVE_SUBSYSTEM.setMotor(motorSpeed);
+
+
+    motorDrive = -joystick.getRawAxis(1);
+    motorTurn = -joystick.getRawAxis(4);
+
+
+    if(Math.abs(joystick.getRawAxis(1)) < 0.1){
+      motorDrive = 0; 
+    }
+    else{
+      motorDrive = joystick.getRawAxis(1);  
+    }
+
+    // turn 
+    if(Math.abs(joystick.getRawAxis(4)) < 0.1){
+      motorTurn = 0; 
+    }
+
+    else{
+      motorTurn = joystick.getRawAxis(4); 
+    }
+
+    DRIVE_SUBSYSTEM.setMotor(drive_Limiter.calculate(motorDrive), motorTurn);
+
   }
 
   // Called once the command ends or is interrupted.

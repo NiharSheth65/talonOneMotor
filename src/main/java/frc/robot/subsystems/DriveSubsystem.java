@@ -7,18 +7,33 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  private TalonSRX talon;
+  private TalonSRX leftFront;
+  private TalonSRX leftBack;
+
+  private TalonSRX rightFront;
+  private TalonSRX rightBack;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
-    talon = new TalonSRX(0);
+    leftFront = new TalonSRX(0);
+    leftBack = new TalonSRX(1);
+    rightFront = new TalonSRX(2);
+    rightBack= new TalonSRX(3);
 
-    talon.configFactoryDefault(); 
+    rightFront.setInverted(true);
+    rightBack.setInverted(true);
+    leftFront.setInverted(false);
+    leftBack.setInverted(false);
+
+    leftBack.follow(leftFront);
+    rightBack.follow(rightBack);
   }
 
   @Override
@@ -26,12 +41,14 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setMotor(double speed){
-    talon.set(ControlMode.PercentOutput, speed);
+  public void setMotor(double drive, double turn){
+    rightFront.set(ControlMode.PercentOutput, drive - turn);
+    leftFront.set(ControlMode.PercentOutput, drive + turn);
   }
 
   public void stop(){
-    talon.set(ControlMode.PercentOutput, 0);
+    rightFront.set(ControlMode.PercentOutput, 0);
+    leftFront.set(ControlMode.PercentOutput, 0);
   }
 
 }
